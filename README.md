@@ -1,2 +1,1 @@
-# bbo
-Big Bang Online
+Big Bang Online Server
