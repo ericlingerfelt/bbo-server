@@ -1,0 +1,1161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- 
+    $Author: bucknerk $
+    $Id: cgi_specs.html,v 1.1 2007/07/13 15:29:04 bucknerk Exp $
+    $Log: cgi_specs.html,v $
+    Revision 1.1  2007/07/13 15:29:04  bucknerk
+    Now they are added
+
+
+-->
+<HTML>
+
+
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<LINK href="cgi_specs.css" rel="stylesheet" type="text/css">
+	<TITLE>Big Bang Online CGI Specifications</TITLE>
+	<STYLE>
+<!-- This information is a test so that Open Office could read this
+document.  It is pretty odd on what will and what won't work. -->
+	<!--
+		@page { size: 8.5in 11in; margin-left: 1.25in; margin-right: 1.25in; margin-top: 1in; margin-bottom: 1in }
+		P { margin-bottom: 0.08in }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR" >
+<p class="Top">
+<span class="Big_Label" id="top">CGI Specifications for bbn suite</span>
+<br />
+<span id="Revision">$Revision: 1.1 $</span>
+<br />
+<span id="Revision_Date">$Date: 2007/07/13 15:29:04 $</span>
+<br />
+<span id="Header">Header: 0.1, 1</span>
+<br />
+<hr />
+<span class="Big_Label" id="Overview_Label">Overview: </span>
+<br /><br />
+This document provides a quick reference to the CGI specifications for
+interfacing with the  bigbangonline.org server. These are meant to help in
+understanding what data is expected and possibly why an error occurred.
+<br />
+</p>
+<hr />
+<p>
+<span class="Big_Label" id="toc">Table of Contents</span>
+
+</p>
+
+<p>
+<ol>
+  <li><a href="#properties">Property Descriptions</a></br>
+  <li><a href="#admin">Administration</a></br>
+  <li><a href="#bbnsim">BBN Simulator</a></br>
+  <li><a href="#bbnvis">BBN Visulizer</a></br>
+  <li><a href="#bbnobs">BBN Observations</a></br>
+  <li><a href="#constraint">Constraint Generator</a></br>
+  <li><a href="#ratelib">Rate Libraries</a></br>
+  <li><a href="#rateun">Rate Uncertanties</a></br>
+</ol>
+   
+</p>
+<hr />
+<p>
+<a href="#toc">TOC</a>
+<table class="Properties" border="1" cellspacing="0" cellpadding="5"
+  id="properties" >
+
+<caption class="Big_Label" >Property Descriptions
+<thead>
+<tr>
+<th colspan="4" align="left" width="80%">Multiple properties are normally a comma-separated
+list. These descriptions are not<br>
+necessarily of data the user enters but might be data from the server or the
+Java package.</th>
+</tr>
+<tr align="center">
+<th width="20%">Name</th>
+<th width="15%">Description</th>
+<th width="35%">Match Pattern</th>
+<th width="10%">Sample Value</th>
+</tr>
+<tbody>
+<tr>
+<td class="Property_Name">ACCUMULATION_INCREMENT</td>
+<td class="Property_Description">BBN simulator computation parameter for accumulation increment</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">30</td>
+</tr>
+<tr>
+<td class="Property_Name">ACTION</td>
+<td class="Property_Description">Name of a CGI request listed in this specification</td>
+<td class="Property_Pattern">[\w ]+</td>
+<td class="Property_Value">GET ID</td>
+</tr>
+<tr>
+<td class="Property_Name">ADDRESS</td>
+<td class="Property_Description">Address of user's institution.  May contain ASCII(8) which should be interpreted as newlines</td>
+<td class="Property_Pattern">[\w -\.\+\10]+</td>
+<td class="Property_Value">1 Duke's way</td>
+</tr>
+<tr>
+<td class="Property_Name">BBN_RUN_PATH</td>
+<td class="Property_Description">bbn suite path to a simulation or folder</td>
+<td class="Property_Pattern">[\w \.\+-/]+</td>
+<td class="Property_Value">/PUBLIC/No Data</td>
+</tr>
+<tr>
+<td class="Property_Name">BBN_SIM_COMMAND</td>
+<td class="Property_Description">Available command is "run bbn simulator".  The syntax for "run bbn simulator" is "run bbn simulator [Monte Carlo with $VALUE trials and uncertainties "$PATH"] [with $VARIABLE as $VALUE]... [and vary $VARIABLE [as $VALUE]... ]..." where $VARIABLE is a property obtained from GET BBN SIM TYPES.  A example of this command is "run bbn simulator Monte Carlo with 10 trials and uncertainties "/SHARED/default.rate_uncer" with INITIAL_TIMESTEP as 1 with FINAL_TEMPERATURE as 1.0E+09 and vary ETA as 0.1E-10 as 1.0E-9 and vary COSMOLOGICAL_CONSTANT as 1.0 as 2.0"</td>
+<td class="Property_Pattern">run bbn simulator( Monte Carlo with \d+ trials and 
+  uncertainties "[\w \.\+-/]+")? ( with \w+ as [-\+]?\d*\.?\d+([Ee][-\+]?\d+)?)* ( and vary \w+( as [-\+]?\d*\.?\d+([Ee][-\+]?\d+)?)+)*</td>
+<td class="Property_Value">run bbn simulator with INITIAL_TIMESTEP as 1 with FINAL_TEMPERATURE as 1.0E-09 and vary ETA as 0.1E-10 as 1.0E-9 and vary COSMOLOGICAL_CONSTANT as 1.0 as 2.0</td>
+</tr>
+<tr>
+<td class="Property_Name">BIBLIO_STRING</td>
+<td class="Property_Description">Reaclib biblio code</td>
+<td class="Property_Pattern">[\w\+-]{1,4}</td>
+<td class="Property_Value">cf88</td>
+</tr>
+<tr>
+<td class="Property_Name">COMPLETE</td>
+<td class="Property_Description">Y or N indicating if a library contains all 88 rates required for a bbn simulation</td>
+<td class="Property_Pattern">Y|N</td>
+<td class="Property_Value">N</td>
+</tr>
+<tr>
+<td class="Property_Name">CONSTRAINTS</td>
+<td class="Property_Description">Space separated list of constraints for DATA in the form "[with $VARIABLE as $VALUE]..." where $VARIABLE is a property obtained from GET BBN SIM TYPES.  An example is "CONSTRAINTS=with ETA as 0.1 with NEUTRON_LIFETIME as 0.8"</td>
+<td class="Property_Pattern">(with \w+ as [-\+]?\d*\.?\d+([Ee][-\+]?\d+)?)*</td>
+<td class="Property_Value">with ETA as 0.1</td>
+</tr>
+<tr>
+<td class="Property_Name">COSMOLOGICAL_CONSTANT</td>
+<td class="Property_Description">BBN simulator model parameter for cosmological constant</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">0</td>
+</tr>
+<tr>
+<td class="Property_Name">COUNTRY</td>
+<td class="Property_Description">Country of user's institution</td>
+<td class="Property_Pattern">[A-Z a-z]+</td>
+<td class="Property_Value">New Zealand</td>
+</tr>
+<tr>
+<td class="Property_Name">CREATION_DATE</td>
+<td class="Property_Description">Date item was created</td>
+<td class="Property_Pattern">\d{4}/\d{2}\d{2} \d{2}:\d{2}:\d{2}</td>
+<td class="Property_Value">2006/04/01 12:00:00</td>
+</tr>
+<tr>
+<td class="Property_Name">CURRENT_RUN</td>
+<td class="Property_Description">Integer of current run out of TOTAL_RUNS.  Get percent complete with CURRENT_RUN * 100 / TOTAL_RUNS</td>
+<td class="Property_Pattern">\d+</td>
+<td class="Property_Value">1</td>
+</tr>
+<tr>
+<td class="Property_Name">DATA</td>
+<td class="Property_Description">A two dimensional table of data.  It is a comma separated column of data followed by a tab followed by the next column, etc.</td>
+<td class="Property_Pattern">((,*[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?)+\t?)+</td>
+<td class="Property_Value">1, 2\t3, 4</td>
+</tr>
+<tr>
+<td class="Property_Name">DATA_ID</td>
+<td class="Property_Description">Integer identifier for data</td>
+<td class="Property_Pattern">-?\d+</td>
+<td class="Property_Value">1</td>
+</tr>
+<tr>
+<td class="Property_Name">DATA_IDS</td>
+<td class="Property_Description">Tab separated list of integer identifiers for data</td>
+<td class="Property_Pattern">[\d(\t)?]+</td>
+<td class="Property_Value">1</td>
+</tr>
+<tr>
+<td class="Property_Name">DECAY_TYPE</td>
+<td class="Property_Description">Decay type</td>
+<td class="Property_Pattern">NONE|ec|bet\+|bet-</td>
+<td class="Property_Value">ec</td>
+</tr>
+<tr>
+<td class="Property_Name">DESCRIPTION</td>
+<td class="Property_Description">Descriptive text that may contain ASCII(8) which should be interpreted as newlines</td>
+<td class="Property_Pattern">[\w -\.\+\10]*</td>
+<td class="Property_Value">SBBN description</td>
+</tr>
+<tr>
+<td class="Property_Name">DESIRED_PASSWORD</td>
+<td class="Property_Description">password user desires</td>
+<td class="Property_Pattern">[\40-\176]{6,12}</td>
+<td class="Property_Value"></td>
+</tr>
+<tr>
+<td class="Property_Name">DESIRED_USERNAME</td>
+<td class="Property_Description">username user desires</td>
+<td class="Property_Pattern">[\w -]+</td>
+<td class="Property_Value">bobwhite</td>
+</tr>
+<tr>
+<td class="Property_Name">EMAIL</td>
+<td class="Property_Description">Email address of user</td>
+<td class="Property_Pattern">[\w\.-]+@[\w\.-]+\.[\w-]+</td>
+<td class="Property_Value">bob.white@ lame-names.domain.com</td>
+</tr>
+<tr>
+<td class="Property_Name">ETA</td>
+<td class="Property_Description">BBN simulator model parameter for final baryon-to-photon ratio (eta)</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">3.162e-10</td>
+</tr>
+<tr>
+<td class="Property_Name">ETA_RANGES</td>
+<td class="Property_Description">Tab separated list of pairs of numbers.  Pairs of numbers are separated with a comma</td>
+<td class="Property_Pattern">([-\+]?\d*\.?\d+([Ee][-\+]?\d+)?, [-\+]?\d*\.?\d+([Ee][-\+]?\d+)?(\t)?)*</td>
+<td class="Property_Value">1e-10,2e-10</td>
+</tr>
+<tr>
+<td class="Property_Name">EXISTS</td>
+<td class="Property_Description">Y or N indicating if path exists</td>
+<td class="Property_Pattern">Y|N</td>
+<td class="Property_Value">Y</td>
+</tr>
+<tr>
+<td class="Property_Name">FINAL_TEMPERATURE</td>
+<td class="Property_Description">BBN simulator computation parameter for final temperature</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">1e-2</td>
+</tr>
+<tr>
+<td class="Property_Name">FIRST_NAME</td>
+<td class="Property_Description">First name of user</td>
+<td class="Property_Pattern">[\w \.-]+</td>
+<td class="Property_Value">Bob</td>
+</tr>
+<tr>
+<td class="Property_Name">FOLDERS</td>
+<td class="Property_Description">tab separated list of folders in PATH</td>
+<td class="Property_Pattern">[\w \.\+-/\t]*</td>
+<td class="Property_Value"></td>
+</tr>
+<tr>
+<td class="Property_Name">GET_BBN_DATA_COMMAND</td>
+<td class="Property_Description">Available command is "get bbn data".  The syntax for "get bbn data" is "get bbn data for $PATH return [quantity [final] $VARIABLE]... [for $VARIABLE as $VALUE]..." where $VARIABLE is a property obtained from GET BBN SIM TYPES.  The server will return as much data as possible that matches this criteria.</td>
+<td class="Property_Pattern">get bbn data for "[\w \.\+-/]+" return( quantity( final)? [\w/&amp;]+)+( for [\w/&amp;]+ as [-\+]?\d*\.?\d+([Ee][-\+]?\d+)?)*</td>
+<td class="Property_Value"></td>
+</tr>
+<tr>
+<td class="Property_Name">GRAVITATIONAL_CONSTANT</td>
+<td class="Property_Description">BBN simulator model parameter for gravational constant</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">1</td>
+</tr>
+<tr>
+<td class="Property_Name">HEADER</td>
+<td class="Property_Description">String containing the version of this specification to use.</td>
+<td class="Property_Pattern">\d+\.\d+</td>
+<td class="Property_Value">0.1</td>
+</tr>
+<tr>
+<td class="Property_Name">HEAR_OF_SUITE</td>
+<td class="Property_Description">Where user heard of the suite</td>
+<td class="Property_Pattern">[\w -\.\+\10]+</td>
+<td class="Property_Value"></td>
+</tr>
+<tr>
+<td class="Property_Name">ID</td>
+<td class="Property_Description">20 character string with session identifier</td>
+<td class="Property_Pattern">\w{20}</td>
+<td class="Property_Value">123456789ABCDEFGHIJK</td>
+</tr>
+<tr>
+<td class="Property_Name">INCREMENT_LIN</td>
+<td class="Property_Description">Number</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">1e-10</td>
+</tr>
+<tr>
+<td class="Property_Name">INCREMENT_LOG</td>
+<td class="Property_Description">Number</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">5e-2</td>
+</tr>
+<tr>
+<td class="Property_Name">INITIAL_TEMPERATURE</td>
+<td class="Property_Description">BBN simulator computation parameter for initial temperature</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">1e2</td>
+</tr>
+<tr>
+<td class="Property_Name">INITIAL_TIMESTEP</td>
+<td class="Property_Description">BBN simulator computation parameter for initial time-step</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">1e-4</td>
+</tr>
+<tr>
+<td class="Property_Name">INSTITUTION</td>
+<td class="Property_Description">Name of institution user is affiliated with.  May contain ASCII(8) which should be interpreted as newlines</td>
+<td class="Property_Pattern">[\w -\.\+\10]+</td>
+<td class="Property_Value">Duke Univ.</td>
+</tr>
+<tr>
+<td class="Property_Name">ISOTOPE</td>
+<td class="Property_Description">Isotope identifier consisting of an integer number of protons followed by a comma followed by an integer number of protons and neutrons</td>
+<td class="Property_Pattern">\d+,\d+</td>
+<td class="Property_Value">0,1</td>
+</tr>
+<tr>
+<td class="Property_Name">ISOTOPES</td>
+<td class="Property_Description">Tab separated list of ISOTOPE</td>
+<td class="Property_Pattern">(\d+,\d+(\t)?)+</td>
+<td class="Property_Value">0,1</td>
+</tr>
+<tr>
+<td class="Property_Name">ISOTOPE_LABEL</td>
+<td class="Property_Description">Isotope labels</td>
+<td class="Property_Pattern">[\w \+-/]+</td>
+<td class="Property_Value">H</td>
+</tr>
+<tr>
+<td class="Property_Name">LAST_NAME</td>
+<td class="Property_Description">Last name of user</td>
+<td class="Property_Pattern">[\w \.-]+</td>
+<td class="Property_Value">White</td>
+</tr>
+<tr>
+<td class="Property_Name">LIBRARY</td>
+<td class="Property_Description">Path to library</td>
+<td class="Property_Pattern">[\w \.\+-/]+</td>
+<td class="Property_Value">/PUBLIC/SKM 1993</td>
+</tr>
+<tr>
+<td class="Property_Name">LIBRARY_NOTES</td>
+<td class="Property_Description">Descriptive text about a library that may contain ASCII(8) which should be interpreted as newlines</td>
+<td class="Property_Pattern">[\w -\.\+\10]*</td>
+<td class="Property_Value">No library notes for now</td>
+</tr>
+<tr>
+<td class="Property_Name">LIBRARY_RECIPE</td>
+<td class="Property_Description">Descriptive text about a library construction that may contain ASCII(8) which should be interpreted as newlines</td>
+<td class="Property_Pattern">[\w -\.\+\10]*</td>
+<td class="Property_Value">Empty Library</td>
+</tr>
+<tr>
+<td class="Property_Name">LOGOUT</td>
+<td class="Property_Description">Indicates that logout was successful.  Always is SUCCESS</td>
+<td class="Property_Pattern">SUCCESS</td>
+<td class="Property_Value">SUCCESS</td>
+</tr>
+<tr>
+<td class="Property_Name">LOOPING_LIST</td>
+<td class="Property_Description">tab separated list of variables looped over in a simulation</td>
+<td class="Property_Pattern">[\w \+-/\t]*</td>
+<td class="Property_Value">ETA</td>
+</tr>
+<tr>
+<td class="Property_Name">LOWER_BOUND</td>
+<td class="Property_Description">Number</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">1e-11</td>
+</tr>
+<tr>
+<td class="Property_Name">MAX</td>
+<td class="Property_Description">Number</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">1e-9</td>
+</tr>
+<tr>
+<td class="Property_Name">MAX_ISOTOPE</td>
+<td class="Property_Description">Z,A where Z and A are integers</td>
+<td class="Property_Pattern">\d+,\d+</td>
+<td class="Property_Value">8,16</td>
+</tr>
+<tr>
+<td class="Property_Name">MAX_POINTS</td>
+<td class="Property_Description">Tab separated list of pairs of numbers.  Pairs of numbers are separated with a comma</td>
+<td class="Property_Pattern">([-\+]?\d*\.?\d+([Ee][-\+]?\d+)?, [-\+]?\d*\.?\d+([Ee][-\+]?\d+)?(\t)?)*</td>
+<td class="Property_Value">1e-10,2e-10</td>
+</tr>
+<tr>
+<td class="Property_Name">MID</td>
+<td class="Property_Description">Number</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">5e-10</td>
+</tr>
+<tr>
+<td class="Property_Name">MID_POINTS</td>
+<td class="Property_Description">Tab separated list of pairs of numbers.  Pairs of numbers are separated with a comma</td>
+<td class="Property_Pattern">([-\+]?\d*\.?\d+([Ee][-\+]?\d+)?, [-\+]?\d*\.?\d+([Ee][-\+]?\d+)?(\t)?)*</td>
+<td class="Property_Value">1e-10,2e-10</td>
+</tr>
+<tr>
+<td class="Property_Name">MIN</td>
+<td class="Property_Description">Number</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">1e-10</td>
+</tr>
+<tr>
+<td class="Property_Name">MIN_ISOTOPE</td>
+<td class="Property_Description">Z,A where Z and A are integers</td>
+<td class="Property_Pattern">\d+,\d+</td>
+<td class="Property_Value">0,1</td>
+</tr>
+<tr>
+<td class="Property_Name">MIN_POINTS</td>
+<td class="Property_Description">Tab separated list of pairs of numbers.  Pairs of numbers are separated with a comma</td>
+<td class="Property_Pattern">([-\+]?\d*\.?\d+([Ee][-\+]?\d+)?, [-\+]?\d*\.?\d+([Ee][-\+]?\d+)?(\t)?)*</td>
+<td class="Property_Value">1e-10,2e-10</td>
+</tr>
+<tr>
+<td class="Property_Name">MODIFICATION_DATE</td>
+<td class="Property_Description">Date item was last modified</td>
+<td class="Property_Pattern">\d{4}/\d{2}\d{2} \d{2}:\d{2}:\d{2}</td>
+<td class="Property_Value">2006/04/01 12:00:00</td>
+</tr>
+<tr>
+<td class="Property_Name">MONTE_CARLO_LIST</td>
+<td class="Property_Description">tab separated list of variables modified by Monte Carlo simulation</td>
+<td class="Property_Pattern">[\w \+-/\t]*</td>
+<td class="Property_Value">D/H\t3He/H\tY_p\t7Li/H</td>
+</tr>
+<tr>
+<td class="Property_Name">MONTE_CARLO_TRIALS</td>
+<td class="Property_Description">Integer number of Monte Carlo trials for a bbn simulation</td>
+<td class="Property_Pattern">\d+</td>
+<td class="Property_Value">0</td>
+</tr>
+<tr>
+<td class="Property_Name">NEUTRON_LIFETIME</td>
+<td class="Property_Description">BBN simulator model parameter for neutron lifetime</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">8.885e2</td>
+</tr>
+<tr>
+<td class="Property_Name">NOTES</td>
+<td class="Property_Description">Descriptive text that may contain ASCII(8) which should be interpreted as newlines</td>
+<td class="Property_Pattern">[\w -\.\+\10/]*</td>
+<td class="Property_Value">Sim notes</td>
+</tr>
+<tr>
+<td class="Property_Name">NUMBER_NEUTRINO_SPECIES</td>
+<td class="Property_Description">BBN simulator model parameter for number of neutrino species</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">3</td>
+</tr>
+<tr>
+<td class="Property_Name">OBSERVATIONS</td>
+<td class="Property_Description">A tab separated list of observation values.  An observation value contains a comma separated list of a label, minimum abundance, middle abundance, and maximum abundance</td>
+<td class="Property_Pattern">([\w \+-/\t]+, [-\+]?\d*\.?\d+([Ee][-\+]?\d+)?, [-\+]?\d*\.?\d+([Ee][-\+]?\d+)?, [-\+]?\d*\.?\d+([Ee][-\+]?\d+)?\t?)+</td>
+<td class="Property_Value"></td>
+</tr>
+<tr>
+<td class="Property_Name">OBS_PATH</td>
+<td class="Property_Description">path to a set of observations or folder</td>
+<td class="Property_Pattern">[\w \.\+-/]+</td>
+<td class="Property_Value">/PUBLIC/No Data</td>
+</tr>
+<tr>
+<td class="Property_Name">OVERWRITE</td>
+<td class="Property_Description">Y or N indicating if PATH should be overwrote during save</td>
+<td class="Property_Pattern">Y|N</td>
+<td class="Property_Value">N</td>
+</tr>
+<tr>
+<td class="Property_Name">PARAMETER</td>
+<td class="Property_Description">Parameter from GET BBN SIM TYPES</td>
+<td class="Property_Pattern">[\w \+-/]+</td>
+<td class="Property_Value">ETA</td>
+</tr>
+<tr>
+<td class="Property_Name">PARAMETERS</td>
+<td class="Property_Description">tab separated list of parameters from GET BBN SIM TYPES or parameters produced by the simulation.  These include Temp, N/H, P, D/H, T/H, He3/H, He4, Li6/H, Li7/H,
+Be7/H, Li8/H, H, T, rhog, rhoe, rhone, rhob, phie, dt, eta, H.  Note
+that T is time and H is expansion rate.  When a Monte Carlo simulation is performed additional parameters are available whose names end with one of the following suffixes: _min, _max, _mid </td>
+<td class="Property_Pattern">[\w \+-/\t]+</td>
+<td class="Property_Value">ETA	NEUTRON_LIFETIME</td>
+</tr>
+<tr>
+<td class="Property_Name">PASSWORD_HINT</td>
+<td class="Property_Description">hint to display to user when password is forgotton.  May contain ASCII(8) which should be interpreted as newlines</td>
+<td class="Property_Pattern">[\w -\.\+\10]+</td>
+<td class="Property_Value">my dead dog's name</td>
+</tr>
+<tr>
+<td class="Property_Name">PATH</td>
+<td class="Property_Description">bbn suite path to a simulation or folder</td>
+<td class="Property_Pattern">[\w \.\+-/]+</td>
+<td class="Property_Value">/PUBLIC/No Data</td>
+</tr>
+<tr>
+<td class="Property_Name">PATHS</td>
+<td class="Property_Description">tab separated list of bbn suite paths</td>
+<td class="Property_Pattern">[\w \.\+-/\t]+</td>
+<td class="Property_Value">/PUBLIC/No Data</td>
+</tr>
+<tr>
+<td class="Property_Name">PW</td>
+<td class="Property_Description">Password of user</td>
+<td class="Property_Pattern">[A-Fa-f0-9]{40}</td>
+<td class="Property_Value">guest</td>
+</tr>
+<tr>
+<td class="Property_Name">RATE_PARMS</td>
+<td class="Property_Description">Comma separated list of parameters</td>
+<td class="Property_Pattern">([-\+]?\d*\.?\d+([Ee][-\+]?\d+)?(,)?)+</td>
+<td class="Property_Value">1,-1,1,-1,1,-1,1</td>
+</tr>
+<tr>
+<td class="Property_Name">RATE_PARM_COUNT</td>
+<td class="Property_Description">Integer number of parameters</td>
+<td class="Property_Pattern">7|14|21|28|35|42|49</td>
+<td class="Property_Value">14</td>
+</tr>
+<tr>
+<td class="Property_Name">RATE_UNCERTAINTY_LIST</td>
+<td class="Property_Description">A tab separated list of uncertainty values for reactions.  A reaction uncertainty value contains a comma separated list of a reaction string, decay type, and uncertainty value</td>
+<td class="Property_Pattern">([\w &gt;\*\+-]+, [\w\+-]+, [-\+]?\d*\.?\d+([Ee][-\+]?\d+)?(\t)?)+</td>
+<td class="Property_Value">n --&gt; p,NONE,0.03</td>
+</tr>
+<tr>
+<td class="Property_Name">RATE_UNCERTAINTY_PATH</td>
+<td class="Property_Description">Path to a rate uncertainty file</td>
+<td class="Property_Pattern">[\w \.\+-/]+</td>
+<td class="Property_Value">/PUBLIC/No Data</td>
+</tr>
+<tr>
+<td class="Property_Name">REACTION_STRING</td>
+<td class="Property_Description">Reaction string</td>
+<td class="Property_Pattern">[\w &gt;\*\+-]+</td>
+<td class="Property_Value">p --&gt; d</td>
+</tr>
+<tr>
+<td class="Property_Name">REACTION_TYPE</td>
+<td class="Property_Description">Integer Reaclib reaction type that varies between 1 and 8</td>
+<td class="Property_Pattern">[1-8]</td>
+<td class="Property_Value">1</td>
+</tr>
+<tr>
+<td class="Property_Name">REACTION_TYPES</td>
+<td class="Property_Description">Tab separated list of integer Reaclib reaction types that varies between 1 and 8.  Any negative reaction type implies all reaction types.</td>
+<td class="Property_Pattern">[1-8\t]*|-\d+</td>
+<td class="Property_Value">1</td>
+</tr>
+<tr>
+<td class="Property_Name">RECIPE</td>
+<td class="Property_Description">Descriptive text about the history of an item</td>
+<td class="Property_Pattern">[\w \.\+-/\t\10]+</td>
+<td class="Property_Value"></td>
+</tr>
+<tr>
+<td class="Property_Name">REGISTER</td>
+<td class="Property_Description">Indicates that registration was successful.  Always is SUCCESS</td>
+<td class="Property_Pattern">SUCCESS</td>
+<td class="Property_Value">SUCCESS</td>
+</tr>
+<tr>
+<td class="Property_Name">REPORT</td>
+<td class="Property_Description">Descriptive text that may contain ASCII(8) which should be interpreted as newlines</td>
+<td class="Property_Pattern">[\w -\.\+\10]*</td>
+<td class="Property_Value">a long boring report goes here</td>
+</tr>
+<tr>
+<td class="Property_Name">RESEARCH_TYPE</td>
+<td class="Property_Description">Choices are: cosmology, big bang nucleosynthesis, general nuclear astrophysics, nuclear physics, astrophysics, other.  May contain ASCII(8) which should be interpreted as newlines</td>
+<td class="Property_Pattern">[\w -\.\+\10]+</td>
+<td class="Property_Value"></td>
+</tr>
+<tr>
+<td class="Property_Name">RUN</td>
+<td class="Property_Description">Indicates that run successfully started. Always is SUCCESS</td>
+<td class="Property_Pattern">SUCCESS</td>
+<td class="Property_Value">SUCCESS</td>
+</tr>
+<tr>
+<td class="Property_Name">RUNS</td>
+<td class="Property_Description">tab separated list of simulation names in PATH</td>
+<td class="Property_Pattern">[\w \.\+-/\t]*</td>
+<td class="Property_Value">No Data</td>
+</tr>
+<tr>
+<td class="Property_Name">R_NR</td>
+<td class="Property_Description">Comma separates list of r/nr flags, resonant / nonresonant flags for parameter sets for reactions.  The number of flags should be RATE_PARM_COUNT/7</td>
+<td class="Property_Pattern">((r|nr),?)+</td>
+<td class="Property_Value">nr,r,r</td>
+</tr>
+<tr>
+<td class="Property_Name">SIMULATION</td>
+<td class="Property_Description">RUNNING or COMPLETE indicating if simulation is currently running</td>
+<td class="Property_Pattern">RUNNING|COMPLETE</td>
+<td class="Property_Value">COMPLETE</td>
+</tr>
+<tr>
+<td class="Property_Name">SIMULATION_TYPE</td>
+<td class="Property_Description">Name of type of simulation</td>
+<td class="Property_Pattern">[\w -\.\+]+</td>
+<td class="Property_Value">SBBN</td>
+</tr>
+<tr>
+<td class="Property_Name">SMALLEST_ABUND_ALLOWED</td>
+<td class="Property_Description">BBN simulator computation parameter for smallest abundances allowed</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">1e-25</td>
+</tr>
+<tr>
+<td class="Property_Name">STOP</td>
+<td class="Property_Description">Indicates that simulation successfully stopped. Always is SUCCESS</td>
+<td class="Property_Pattern">SUCCESS|FAIL</td>
+<td class="Property_Value">SUCCESS|FAIL</td>
+</tr>
+<tr>
+<td class="Property_Name">SUMMARY</td>
+<td class="Property_Description">One line description</td>
+<td class="Property_Pattern">[\w -\.\+]*</td>
+<td class="Property_Value">a short boring report goes here</td>
+</tr>
+<tr>
+<td class="Property_Name">TEXT</td>
+<td class="Property_Description">Simulator output that may contain ASCII(8) which should be interpreted as newlines</td>
+<td class="Property_Pattern">[\w -\.\+\10]*</td>
+<td class="Property_Value">Simulation still running</td>
+</tr>
+<tr>
+<td class="Property_Name">TEXT_SKIPPED</td>
+<td class="Property_Description">Y or N indicating if text was skipped between this update and the previous update</td>
+<td class="Property_Pattern">Y|N</td>
+<td class="Property_Value">Y</td>
+</tr>
+<tr>
+<td class="Property_Name">TIMEOUT</td>
+<td class="Property_Description">Number of minutes after last CGI request that user will be automatically logged out</td>
+<td class="Property_Pattern">\d+</td>
+<td class="Property_Value">180</td>
+</tr>
+<tr>
+<td class="Property_Name">TIME_STEP_CONSTANT1</td>
+<td class="Property_Description">BBN simulator computation parameter for time-step limiting constant 1</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">0.3</td>
+</tr>
+<tr>
+<td class="Property_Name">TIME_STEP_CONSTANT2</td>
+<td class="Property_Description">BBN simulator computation parameter for time-step limiting constant 2</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">0.03</td>
+</tr>
+<tr>
+<td class="Property_Name">TOTAL_RUNS</td>
+<td class="Property_Description">Integer of total number of runs.  Get percent complete with CURRENT_RUN * 100 / TOTAL_RUNS</td>
+<td class="Property_Pattern">\d+</td>
+<td class="Property_Value">1</td>
+</tr>
+<tr>
+<td class="Property_Name">UNCERTAINTY</td>
+<td class="Property_Description">Number</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">0.03</td>
+</tr>
+<tr>
+<td class="Property_Name">UPPER_BOUND</td>
+<td class="Property_Description">Number</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">1e-8</td>
+</tr>
+<tr>
+<td class="Property_Name">USER</td>
+<td class="Property_Description">Username</td>
+<td class="Property_Pattern">[\w -]+</td>
+<td class="Property_Value">guest</td>
+</tr>
+<tr>
+<td class="Property_Name">XI_ELECTRON</td>
+<td class="Property_Description">BBN simulator model parameter for Xi-electron</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">0</td>
+</tr>
+<tr>
+<td class="Property_Name">XI_MUON</td>
+<td class="Property_Description">BBN simulator model parameter for Xi-muon</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">0</td>
+</tr>
+<tr>
+<td class="Property_Name">XI_TAUON</td>
+<td class="Property_Description">BBN simulator model parameter for Xi-tauon</td>
+<td class="Property_Pattern">[-\+]?\d*\.?\d+([Ee][-\+]?\d+)?</td>
+<td class="Property_Value">0</td>
+</tr>
+</table>
+<hr />
+<p>
+
+</p>
+<a href="#toc">TOC</a>
+<table class="Properties" border="1" cellspacing="0" cellpadding="5" id="admin">
+  
+  <caption class="Big_Label" >Administration</span>
+  <thead>
+    <tr>
+      <th colspan="4" align="left">Multiple properties are normally a comma-separated
+      list. These descriptions are <br>
+      of options used for the administrative functions of BBN.</th>
+    </tr>
+    <tr>
+      <th width="15%">Request</th>
+      <th width="15%">Description</th>
+      <th width="40%">Submit Properties</th>
+      <th width="10%">Response Properties</th>
+    </tr>
+<tr>
+<td class="Request_Name">GET ID<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get session ID from server</td>
+<td class="Request_Submit">HEADER,ACTION,USER,PW</td>
+<td class="Request_Response">ID</td>
+</tr>
+<tr>
+<td class="Request_Name">GET TIMEOUT<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Users are automatically logged out if a CGI request is not called within a certain timeframe.  This request returns the length of the timeframe in minutes.</td>
+<td class="Request_Submit">HEADER,ID,ACTION,USER,PW</td>
+<td class="Request_Response">TIMEOUT</td>
+</tr>
+<tr>
+<td class="Request_Name">LOGOUT<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Terminates user's session</td>
+<td class="Request_Submit">HEADER,ID,ACTION,USER,PW</td>
+<td class="Request_Response">LOGOUT</td>
+</tr>
+<tr>
+<td class="Request_Name">REGISTER<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Submit a user registration for approval for an account.  The NOTES field allows additional information (supervisor / research mentor) to be submitted</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW,  LAST_NAME , FIRST_NAME, EMAIL, INSTITUTION, ADDRESS, COUNTRY, RESEARCH_TYPE, DESIRED_USERNAME, DESIRED_PASSWORD, PASSWORD_HINT, NOTES, HEAR_OF_SUITE</td>
+<td class="Request_Response">REGISTER</td>
+</tr>
+</table>
+
+<p>
+<a href="#toc">TOC</a>
+<table class="Properties" border="1" cellspacing="0" cellpadding="5" >
+  <caption class="Big_Label">BBN Simulator</caption>
+  <thead>
+    <tr>
+      <th width="15%">Request</th>
+      <th width="15%">Description</th>
+      <th width="40%">Submit Properties</th>
+      <th width="10%">Response Properties</th>
+    </tr>
+<tr>
+<td class="Request_Name">GET BBN SIM TYPES<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get list of available BBN simulations and all default values.  One set of properties is returned for every simulation type.  Each line contains a property listed in the response property list.  The first property in the set will always be the SIMULATION_TYPE.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW</td>
+<td class="Request_Response">SIMULATION_TYPE, DESCRIPTION, TIME_STEP_CONSTANT1, TIME_STEP_CONSTANT2, INITIAL_TIMESTEP, INITIAL_TEMPERATURE, FINAL_TEMPERATURE, SMALLEST_ABUND_ALLOWED, ACCUMULATION_INCREMENT, GRAVITATIONAL_CONSTANT, NEUTRON_LIFETIME, NUMBER_NEUTRINO_SPECIES, ETA, COSMOLOGICAL_CONSTANT, XI_ELECTRON, XI_MUON, XI_TAUON</td>
+</tr>
+<tr>
+<td class="Request_Name">GET BBN LOOPING DEFAULTS<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get looping defaults for bbn simulator.  One set of properties is returned for every quantity in PARAMETERS.  Each line contains a property listed in the response property list.  The first property in the set will always be the PARAMETER.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PARAMETERS</td>
+<td class="Request_Response">PARAMETER,  MIN, MAX, INCREMENT_LIN, INCREMENT_LOG, LOWER_BOUND, UPPER_BOUND</td>
+</tr>
+<tr>
+<td class="Request_Name">BBN SIM SETUP<br />
+<span class="Status">Uses default library</span>
+</td>
+<td class="Request_Description">Prepare library for a BBN simulation</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, SIMULATION_TYPE, LIBRARY</td>
+<td class="Request_Response">REPORT,  SUMMARY, MIN_ISOTOPE, MAX_ISOTOPE</td>
+</tr>
+<tr>
+<td class="Request_Name">RUN BBN SIM<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description"></td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, BBN_SIM_COMMAND</td>
+<td class="Request_Response">RUN</td>
+</tr>
+<tr>
+<td class="Request_Name">BBN SIM UPDATE<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Returns the latest output from bbn simulator.  It only sends output that has not been sent before and returns as many lines of text that will fit within 1000 characters.  Newlines will be replaced with ASCII(8) so that the TEXT property will fit on one line</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW</td>
+<td class="Request_Response">TEXT_SKIPPED, SIMULATION, TEXT, TOTAL_RUNS, CURRENT_RUN</td>
+</tr>
+<tr>
+<td class="Request_Name">ABORT BBN SIM<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description"></td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW</td>
+<td class="Request_Response">STOP</td>
+</tr>
+<tr>
+<td class="Request_Name">SAVE BBN SIM<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description"></td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH, OVERWRITE, NOTES</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+</table>
+
+<p>
+<a href="#toc">TOC</a>
+
+</p>
+<table class="Properties" border="1" cellspacing="0" cellpadding="5" id="bbnvis">
+<caption class="Big_Label">BBN Visualizer</caption>
+
+<tr>
+<th width="15%">Request</th>
+<th width="15%">Description</th>
+<th width="40%">Submit Properties</th>
+<th width="10%">Response Properties</th>
+</tr>
+<tr>
+<td class="Request_Name">GET BBN RUN LIST<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get list of folders and simulations in list of PATHS.  One set of properties is returned for every PATH in PATHS.  Each line contains a property listed in the response property list.  The first property in the set will always be PATH.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATHS</td>
+<td class="Request_Response">PATH, RUNS, FOLDERS</td>
+</tr>
+<tr>
+<td class="Request_Name">GET BBN RUN INFO<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get list of properties set in the BBN_SIM_COMMAND for a list of PATHS.  One set of properties is returned for every PATH in PATHS.  Each line contains a property listed in the response property list.  The first property in the set will always be PATH.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATHS</td>
+<td class="Request_Response">PATH, NOTES, CREATION_DATE, MODIFICATION_DATE, MONTE_CARLO_LIST, LOOPING_LIST, LIBRARY, RATE_UNCERTAINTY_PATH, MONTE_CARLO_TRIALS, RECIPE</td>
+</tr>
+<tr>
+<td class="Request_Name">GET BBN RUN DATA<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get data from a bbn simulation.  One set of properties is returned for every table of data meeting the conditions in GET_BBN_DATA_COMMAND.  Each item in PARAMETERS corresponds with a column in DATA.  The first property returned for each table will always be PATH.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, GET_BBN_DATA_COMMAND</td>
+<td class="Request_Response">PATH, PARAMETERS, CONSTRAINTS, DATA</td>
+</tr>
+<tr>
+<td class="Request_Name">BBN RUN EXIST<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Check if path to a bbn simulation is used.  One set of properties is returned for every path in PATHS.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATHS</td>
+<td class="Request_Response">PATH, EXISTS</td>
+</tr>
+<tr>
+<td class="Request_Name">ERASE BBN RUN<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Erase bbn run for a given path</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+<tr>
+<td class="Request_Name">COPY BBN RUN TO SHARED<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Copy bbn run for a given path to SHARED folder</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+</table>
+
+<p>
+<a href="#toc">TOC</a>
+<table class="Properties" border="1" cellspacing="0" cellpadding="5" >
+<caption class="Big_Label" id="bbnobs">BBN Observations</caption>
+
+<tr>
+<th width="15%">Request</th>
+<th width="15%">Description</th>
+<th width="40%">Submit Properties</th>
+<th width="10%">Response Properties</th>
+</tr>
+<tr>
+<td class="Request_Name">GET OBS LIST<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get list of folders and observations in list of PATHS. One set of properties is returned for every PATH in PATHS. Each line contains a property listed in the response property list. The first property in the set will always be PATH.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATHS</td>
+<td class="Request_Response">PATH, RUNS, FOLDERS</td>
+</tr>
+<tr>
+<td class="Request_Name">GET OBS INFO<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get information about constraints in a list of PATHS. One set of properties is returned for every PATH in PATHS. Each line contains a property listed in the response property list. The first property in the set will always be PATH.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATHS</td>
+<td class="Request_Response">PATH, NOTES, CREATION_DATE, MODIFICATION_DATE</td>
+</tr>
+<tr>
+<td class="Request_Name">GET OBS DATA<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get abundance observation values.  One set of properties is returned for every isotope in the observation set.  The first property returned for each isotope will always be ISOTOPE_LABEL.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH</td>
+<td class="Request_Response">PATH, ISOTOPE_LABEL, MIN, MID, MAX</td>
+</tr>
+<tr>
+<td class="Request_Name">OBS EXIST<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Check if path to a bbn obsveration is used.  One set of properties is returned for every path in PATHS.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATHS</td>
+<td class="Request_Response">PATH, EXISTS</td>
+</tr>
+<tr>
+<td class="Request_Name">SAVE OBS<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Save abundance observation values</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH, NOTES, OVERWRITE, OBSERVATIONS</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+<tr>
+<td class="Request_Name">ERASE OBS<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Erase abundance observation for a given path</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+<tr>
+<td class="Request_Name">COPY OBS TO SHARED<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Copy abundance observation for a given path to SHARED folder</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+</table>
+
+<p>
+<a href="#toc">TOC</a>
+<table class="Properties" border="1" cellspacing="0" cellpadding="5" id="constraint">
+<caption class="Big_Label" >Constraint Generator</caption>
+
+<tr>
+<th>Request</th>
+<th>Description</th>
+<th>Submit Properties</th>
+<th>Response Properties</th>
+</tr>
+<tr>
+<td class="Request_Name">GET CONSTRAINT LIST<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get list of folders and constraints in list of PATHS. One set of properties is returned for every PATH in PATHS. Each line contains a property listed in the response property list. The first property in the set will always be PATH.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATHS</td>
+<td class="Request_Response">PATH, RUNS, FOLDERS</td>
+</tr>
+<tr>
+<td class="Request_Name">GET CONSTRAINT INFO<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get information about constraints in a list of PATHS. One set of properties is returned for every PATH in PATHS. Each line contains a property listed in the response property list. The first property in the set will always be PATH.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATHS</td>
+<td class="Request_Response">PATH, NOTES, CREATION_DATE, MODIFICATION_DATE, OBS_PATH, BBN_RUN_PATH</td>
+</tr>
+<tr>
+<td class="Request_Name">GET CONSTRAINT DATA<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get eta constraint intervals.  One set of properties is returned for every isotope in the observation set.  The first property returned for each isotope will always be ISOTOPE.  The point give eta as the x-value and the observation as the y-value.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH</td>
+<td class="Request_Response">PATH, ISOTOPE_LABEL, MIN_POINTS, MID_POINTS, MAX_POINTS, ETA_RANGES</td>
+</tr>
+<tr>
+<td class="Request_Name">RUN CONSTRAINT GENERATOR<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description"></td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, OBS_PATH, BBN_RUN_PATH</td>
+<td class="Request_Response">RUN</td>
+</tr>
+<tr>
+<td class="Request_Name">SAVE CONSTRAINT<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description"></td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH, OVERWRITE, NOTES</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+<tr>
+<td class="Request_Name">ERASE CONSTRAINT<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Erase constraint for a given path</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+<tr>
+<td class="Request_Name">COPY CONSTRAINT TO SHARED<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Copy constraint for a given path to SHARED folder</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+</table>
+
+<p>
+<a href="#toc">TOC</a>
+<table class="Properties" border="1" cellspacing="0" cellpadding="5" id="ratelib">
+<caption class="Big_Label" >Rate Library</caption>
+
+<tr>
+<th width="15%">Request</th>
+<th width="15%">Description</th>
+<th width="40%">Submit Properties</th>
+<th width="10%">Response Properties</th>
+</tr>
+<tr>
+<td class="Request_Name">GET RATE LIBRARY LIST<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get list of folders and libraries in list of PATHS. One set of properties is returned for every PATH in PATHS. Each line contains a property listed in the response property list. The first property in the set will always be PATH.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATHS</td>
+<td class="Request_Response">PATH, RUNS, FOLDERS</td>
+</tr>
+<tr>
+<td class="Request_Name">GET RATE LIBRARY INFO<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get information about libraries in a list of PATHS. One set of properties is returned for every PATH in PATHS. Each line contains a property listed in the response property list. The first property in the set will always be PATH.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATHS</td>
+<td class="Request_Response">PATH, NOTES, CREATION_DATE, MODIFICATION_DATE, RECIPE, COMPLETE</td>
+</tr>
+<tr>
+<td class="Request_Name">GET RATE LIBRARY ISOTOPES<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get list of isotopes for libraries in a list of PATHS. One set of properties is returned for every PATH in PATHS. Each line contains a property listed in the response property list. The first property in the set will always be PATH.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATHS</td>
+<td class="Request_Response">PATH, ISOTOPES</td>
+</tr>
+<tr>
+<td class="Request_Name">GET RATE LIST<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get list of reaction rates for a library in PATH. One set of properties is returned for every rate. Each line contains a property listed in the response property list. The first property in the set will always be RATE_ID.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH, ISOTOPES, REACTION_TYPES</td>
+<td class="Request_Response">PATH, DATA_ID, ISOTOPE, REACTION_STRING, DECAY_TYPE</td>
+</tr>
+<tr>
+<td class="Request_Name">GET RATE INFO<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get information about rates for given DATA_IDS. One set of properties is returned for every DATA_ID in DATA_IDS. Each line contains a property listed in the response property list. The first property in the set will always be DATA_ID.</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, DATA_IDS</td>
+<td class="Request_Response">DATA_ID, PATH, ISOTOPE, REACTION_TYPE, REACTION_STRING, DECAY_TYPE, BIBLIO_STRING, CREATION_DATE, MODIFICATION_DATE, RATE_PARM_COUNT, RATE_PARMS, R_NR, NOTES</td>
+</tr>
+<tr>
+<td class="Request_Name">LOCATE RATES<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Look for reaction rates in PATHS with a certain REACTION_STRING and DECAY_TYPE.  Return DATA_IDs for rates located or return empty if no reaction rate exists.</td>
+<td class="Request_Submit">HEADER,  ID,  ACTION,  USER,  PW,  PATHS,  REACTION_STRING,  DECAY_TYPE</td>
+<td class="Request_Response">PATH, REACTION_STRING, DECAY_TYPE, DATA_ID</td>
+</tr>
+<tr>
+<td class="Request_Name">MODIFY RATE<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Overwrite existing rate or add a new rate.  If the values for REACTION_STRING and DECAY_TYPE match an existing rate for that PATH, the existing rate will be overwritten, provided the OVERWRITE property allows it.  If REACTION_STRING and DECAY_TYPE do not match, a new rate will be added.</td>
+<td class="Request_Submit">HEADER,  ID,  ACTION,  USER,  PW,  OVERWRITE,  PATH,  REACTION_STRING,  DECAY_TYPE,  BIBLIO_STRING,  RATE_PARMS,  R_NR,  NOTES</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+<tr>
+<td class="Request_Name">MERGE RATE LIBRARIES<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Merge the libraries in PATHS in increasing order into a new library in PATH.</td>
+ <td class="Request_Submit">HEADER, ID, ACTION, USER, PW, OVERWRITE, PATH, PATHS, NOTES</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+<tr>
+<td class="Request_Name">ERASE LIBRARY<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Erase rate library for a given path</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+<tr>
+<td class="Request_Name">COPY LIBRARY TO SHARED<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Copy rate library for a given path to SHARED folder</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+</table>
+
+<p>
+<a href="#toc">TOC</a>
+<table class="Properties" border="1" cellspacing="0" cellpadding="5" id="rateun" >
+<caption class="Big_Label" >Rate Uncertainties</caption>
+
+<tr>
+<th width="15%">Request</th>
+<th width="15%">Description</th>
+<th width="40%">Submit Properties</th>
+<th width="10%">Response Properties</th>
+</tr>
+<tr>
+<td class="Request_Name">GET RATE UNCERTAINTIES<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get PATHS to uncertainty files</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATHS</td>
+<td class="Request_Response">PATH, RUNS, FOLDERS</td>
+</tr>
+<tr>
+<td class="Request_Name">GET RATE UNCERTAINTY DATA<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Get rate uncertainty data</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH</td>
+<td class="Request_Response">PATH, REACTION_STRING, DECAY_TYPE, UNCERTAINTY</td>
+</tr>
+<tr>
+<td class="Request_Name">SAVE RATE UNCERTAINTIES<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Save rate uncertainty data</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH, RATE_UNCERTAINTY_LIST, NOTES, OVERWRITE</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+<tr>
+<td class="Request_Name">ERASE RATE UNCERTAINTIES<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Erase rate uncertainties for a given path</td>
+<td class="Request_Submit">HEADER, ID, ACTION, USER, PW, PATH</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+<tr>
+<td class="Request_Name">COPY RATE UNCERTAINTIES TO SHARED<br />
+<span class="Status"></span>
+</td>
+<td class="Request_Description">Copy rate uncertainties for a given path to SHARED folder</td>
+<td class="Request_Submit">HEADER,  ID,  ACTION,  USER,  PW,  PATH</td>
+<td class="Request_Response">REPORT</td>
+</tr>
+</table>
+<i>Last update: June 19, 2007</i>
+</body>
+</html>
+

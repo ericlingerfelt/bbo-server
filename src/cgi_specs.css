@@ -1,0 +1,89 @@
+<!--
+  $Author: bucknerk $
+  $Id: cgi_specs.css,v 1.1 2007/07/13 15:29:04 bucknerk Exp $
+  $Log: cgi_specs.css,v $
+  Revision 1.1  2007/07/13 15:29:04  bucknerk
+  Now they are added
+
+
+-->
+body {
+  color: black;
+  background-color: #F0F0F0;
+}
+
+p.Top {
+  font-size: medium;
+}
+
+#title {
+  font-size: x-large;
+}
+
+#Revision {
+  color: red;
+}
+
+#Revision_Date {
+  color: red;
+}
+
+#Header {
+  color: green;
+}
+
+#Overview {
+  margin-left: 1cm;
+  font-size: small;
+}
+
+.Big_Label {
+  font-size: x-large;
+  font-weight: bold;
+  font-style: italic;
+}
+.Description {
+  font-size: normal;
+}
+
+.Status {
+  font-color: #FF0000;
+  font-style: italic;
+}
+
+th {
+  background-color: #CCCCCC;
+}
+
+td.Property_Name {
+  background-color: #FFCCCC;
+}
+
+td.Property_Description {
+  background-color: #CCFFCC;
+}
+
+td.Property_Pattern {
+  background-color: #CCFFFF;
+}
+
+td.Property_Value {
+  background-color: #CCCCFF;
+}
+
+td.Request_Name {
+  background-color: #FFCCCC;
+}
+
+td.Request_Description {
+  background-color: #CCFFCC;
+}
+
+td.Request_Submit {
+  background-color: #FFFFCC;
+}
+
+td.Request_Response {
+  background-color: #CCCCFF;
+}
+

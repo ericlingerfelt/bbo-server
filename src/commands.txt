@@ -1,0 +1,60 @@
+select * from rlib_links where Path = '/SHARED/descouvement';
+
+select rlib_data.DataID,rlib_data.ReactionID from rlib_data inner join rlib_links using (DataID) where rlib_links.Path = '/SHARED/descouvement';
+
+select rlib_data.DataID,rlib_data.ReactionID from rlib_data inner join rlib_links using (DataID) where rlib_links.Path = '/USER/test/m';
+
+select rlib_data.DataID,rlib_data.ReactionID from rlib_data inner join rlib_links using (DataID) where rlib_links.Path = '/SHARED/descouvement';
+
+select rlib_data.DataID,rlib_data.ReactionID from rlib_data inner join rlib_links using (DataID) where rlib_links.Path = '/USER/test/m';
+
+select src_data.DataID,src_data.ReactionID 
+from rlib_data as src_data, rlib_links as src_links, rlib_data as dest_data, rlib_links as dest_links 
+where src_data.ReactionID = dest_data.ReactionID
+ and src_data.DataID = src_links.DataID
+ and dest_data.DataID = dest_links.DataID
+ and src_links.Path = '/SHARED/descouvement'
+ and dest_links.Path = '/USER/test/m'
+order by DataID;
+
+select src_data.DataID,src_data.ReactionID 
+from 
+  rlib_links as src_links 
+  inner join rlib_data as src_data using (DataID)
+  left join rlib_data as dest_data using (ReactionID)
+  inner join rlib_links as dest_links using (DataID)
+where
+  src_links.Path = '/SHARED/descouvement'
+  and dest_links.Path = '/USER/test/m'
+order by DataID;
+
+select src_data.DataID,src_data.ReactionID,dest_data.DataID,dest_data.ReactionID
+from 
+  rlib_links as src_links,
+  rlib_links as dest_links,
+  rlib_data as src_data left join rlib_data as dest_data using (ReactionID)
+where
+  src_links.Path = '/SHARED/descouvement'
+  and dest_links.Path = '/USER/test/m'
+  and src_data.DataID = src_links.DataID
+  and dest_data.DataID = dest_links.DataID
+order by src_data.DataID;
+
+select DataID,ReactionID from rlib_data inner join rlib_links using (DataID) where ReactionID NOT IN (select ReactionID from rlib_data inner join rlib_links using (DataID) where rlib_links.Path = '/USER/test/m') and DataID < 21;
+
+select src_data.DataID,src_data.ReactionID,dest_data.ReactionID
+from 
+  rlib_data as src_data left join rlib_data as dest_data using (ReactionID)
+where
+  src_data.DataID < 21
+  and dest_data.ReactionID = 17
+order by DataID;
+
+select src_data.DataID,src_data.ReactionID,dest_data.DataID,dest_data.ReactionID
+from 
+  rlib_data as src_data left join rlib_data as dest_data on src_data.ReactionID=dest_data.ReactionID
+where src_data.DataID < 21
+  and dest_data.DataID IN (4049,4050,4051)
+order by src_data.DataID;
+
+select rlib_data.DataID,rlib_data.ReactionID from rlib_data inner join rlib_links using (DataID) where ReactionID NOT IN (select ReactionID from rlib_data inner join rlib_links using (DataID) where rlib_links.Path = '/USER/test/m') and rlib_links.Path = '/SHARED/descouvement' order by rlib_data.DataID;
